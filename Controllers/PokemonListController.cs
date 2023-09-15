@@ -1,7 +1,6 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using APIPoke.DTOs;
 using APIPoke.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -10,11 +9,11 @@ namespace APIPoke.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PokemonController : ControllerBase
+    public class PokemonListController : ControllerBase
     {
         private readonly HttpClient _httpClient;
 
-        public PokemonController(IHttpClientFactory httpClientFactory)
+        public PokemonListController(IHttpClientFactory httpClientFactory)
         {
             // Injeção de dependência de HttpClient
             _httpClient = httpClientFactory.CreateClient();
@@ -22,16 +21,16 @@ namespace APIPoke.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPokemon(int id)
+        public async Task<IActionResult> GetAllPokemon()
         {
             try
             {
-                var response = await _httpClient.GetAsync($"https://pokeapi.co/api/v2/pokemon/{id}");
+                var response = await _httpClient.GetAsync("https://pokeapi.co/api/v2/pokemon/");
                 response.EnsureSuccessStatusCode(); // Lança uma exceção em caso de erro HTTP
 
                 var content = await response.Content.ReadAsStringAsync();
-                var pokemon = JsonConvert.DeserializeObject<PokemonResponse>(content);
-                return Ok(pokemon);
+                var pokemonList = JsonConvert.DeserializeObject<PokemonList>(content);
+                return Ok(pokemonList);
             }
             catch (HttpRequestException ex)
             {
