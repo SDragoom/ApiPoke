@@ -10,6 +10,19 @@ namespace APIPoke.Data
     {
         public DbSet<MestrePokemon> MestresPokemon { get; set; }
 
+        public DbSet<BoxPokemon> BoxPokemons { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            // Configuração da relação entre MestrePokemon e BoxPokemon
+            modelBuilder.Entity<MestrePokemon>()
+                .HasMany(m => m.PokemonsCapturados)
+                .WithRequired()
+                .HasForeignKey(bp => bp.MestrePokemonId);
+        }
+
+
+
         public MestrePokemonDbContext(DbConnectionStringBuilder dbConnectionStringBuilder) : base("Data Source=DataDirectoryPokemon.db")
         {
 
@@ -18,5 +31,6 @@ namespace APIPoke.Data
         public MestrePokemonDbContext()
         {
         }
+        
     }
 }

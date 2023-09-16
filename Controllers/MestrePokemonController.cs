@@ -1,18 +1,22 @@
 using APIPoke.Data;
 using APIPoke.DTOs;
 using APIPoke.Models;
+using APIPoke.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Data.Entity;
+using System.Net.Http;
 
 namespace APIPoke.Controllers
 {
     [ApiController]
     [Route("api/mestrePokemon/")]
     public class MestrePokemonController : ControllerBase
-    {    
+    {
+        private readonly HttpClient _httpClient;
 
         [HttpPost("post")]
-        public async Task<IActionResult> CreateMestrePokemon([FromBody] MestrePokemonDto mestrePokemonDto)
+        public async Task<IActionResult> CreateMestrePokemon([FromBody] MestrePokemonDto mestrePokemonDto )
         {
             try
             {
@@ -20,16 +24,16 @@ namespace APIPoke.Controllers
                 {
                     Nome = mestrePokemonDto.Nome,
                     Idade = mestrePokemonDto.Idade,
-                    CPF = mestrePokemonDto.CPF
+                    CPF = mestrePokemonDto.CPF,                    
                 };
 
                 using (var db = new MestrePokemonDbContext())
                 {
-                    db.MestresPokemon.Add(mestrePokemon);
+                    db.MestresPokemon.Add(mestrePokemon);                    
                     db.SaveChanges();
                 }
 
-                return Ok("Mestre Pokémon cadastrado com sucesso." + mestrePokemonDto.ToString());
+                return Ok("Mestre Pokémon cadastrado com sucesso.");
             }
             catch (HttpRequestException ex)
             {
@@ -44,14 +48,21 @@ namespace APIPoke.Controllers
         }
 
         [HttpGet("get")]
-        public async Task<IActionResult> GetMestresPokemon(int id)
+        public async Task<IActionResult> GetMestresPokemon(int idMestrePokemon)
         {
             try
             {
                 using (var db = new MestrePokemonDbContext())
-                {
-                    var mestrePokemon = db.MestresPokemon.Find(id);
-                                       
+                {                    
+                    var mestrePokemon = db.MestresPokemon
+               .Include(mp => mp.PokemonsCapturados)
+               .FirstOrDefault(mp => mp.Id == idMestrePokemon);
+
+                    if (mestrePokemon == null)
+                    {
+                        return NotFound("Mestre Pokémon não encontrado.");
+                    }
+
                     return Ok(mestrePokemon);
                 }
 
@@ -75,7 +86,7 @@ namespace APIPoke.Controllers
             {
                 using (var db = new MestrePokemonDbContext())
                 {
-                    var mestrePokemon = db.MestresPokemon.ToList();
+                    var mestrePokemon = db.MestresPokemon.Include(mp => mp.PokemonsCapturados).ToList();
 
                     return Ok(mestrePokemon);
                 }
@@ -100,12 +111,7 @@ namespace APIPoke.Controllers
             {
                 using (var db = new MestrePokemonDbContext())
                 {
-                    var existingMestrePokemon = db.MestresPokemon.Find(id);
-
-                    if (existingMestrePokemon == null)
-                    {
-                        return NotFound();
-                    }
+                    var existingMestrePokemon = db.MestresPokemon.Find(id);                   
 
                     // Atualizar as propriedades do Mestre Pokémon existente com os novos dados
                     existingMestrePokemon.Nome = mestrePokemonDto.Nome;
@@ -115,7 +121,7 @@ namespace APIPoke.Controllers
                     db.SaveChanges();
                 }
 
-                return Ok("Mestre Pokémon atualizado com sucesso." + mestrePokemonDto.ToString());
+                return Ok("Mestre Pokémon atualizado com sucesso.");
             }
             catch (HttpRequestException ex)
             {
@@ -148,6 +154,94 @@ namespace APIPoke.Controllers
             return Ok("Mestre Pokémon excluído com sucesso.");
 
         }
+
+
+        [HttpPost("Capture")]
+        public async Task<IActionResult> CapturePokemon(int idMestrePokemon, int pokemonId)
+        {
+            try
+            {
+                using (var db = new MestrePokemonDbContext())
+                {
+                    var existingMestrePokemon = db.MestresPokemon
+               .Include(mp => mp.PokemonsCapturados)
+               .FirstOrDefault(mp => mp.Id == idMestrePokemon);
+                    
+
+                    if (existingMestrePokemon == null)
+                    {
+                        return NotFound("Mestre Pokémon não encontrado.");
+                    }
+
+                    if (db.BoxPokemons.Any(bp => bp.MestrePokemonId == idMestrePokemon && bp.PokemonId == pokemonId))
+                    {
+                        return BadRequest("Este Pokémon já foi capturado pelo mestre Pokémon.");
+                    }
+
+                    var novaCaptura = new BoxPokemon
+                    {
+                        PokemonId = pokemonId,
+                        MestrePokemonId = idMestrePokemon
+                    };
+
+                    existingMestrePokemon.PokemonsCapturados.Add(novaCaptura);
+
+                    db.BoxPokemons.Add(novaCaptura); 
+                    db.SaveChanges();
+                }
+
+                return Ok("Pokémon capturado com sucesso.");
+            }
+            catch (HttpRequestException ex)
+            {
+                // Lida com exceções de solicitação HTTP, por exemplo, falha na conexão
+                return StatusCode(500, "Erro na solicitação HTTP: " + ex.Message);
+            }
+            catch (JsonException ex)
+            {
+                // Lida com exceções de desserialização JSON
+                return BadRequest("O JSON não pôde ser desserializado: " + ex.Message);
+            }
+        }
+
+
+
+
+        [HttpGet("GetCapturedPokemon")]
+        public async Task<IActionResult> GetCapturedPokemon(int idMestre)
+        {
+            try
+            {
+                var db = new MestrePokemonDbContext();
+                var pokemonsCapturados = db.MestresPokemon
+               .Include(mp => mp.PokemonsCapturados)
+               .FirstOrDefault(mp => mp.Id == idMestre);
+
+                var pokemonService = new PokemonService(_httpClient);
+                List<PokemonResponse> pokemonConcatenatedResults = new List<PokemonResponse>();
+                var CapturedPokemon = pokemonsCapturados.PokemonsCapturados;
+                
+                foreach (BoxPokemon pokemon in CapturedPokemon)
+                {                    
+                    var pokemons = await pokemonService.GetPokemonById(pokemon.PokemonId);
+                    pokemonConcatenatedResults.Add(pokemons);
+                }
+
+
+                return Ok(pokemonConcatenatedResults);
+            }
+            catch (HttpRequestException ex)
+            {
+                // Lida com exceções de solicitação HTTP, por exemplo, falha na conexão
+                return StatusCode(500, "Erro na solicitação HTTP: " + ex.Message);
+            }
+            catch (JsonException ex)
+            {
+                // Lida com exceções de desserialização JSON
+                return BadRequest("O JSON não pôde ser desserializado: " + ex.Message);
+            }
+        }
+
 
     }
 }

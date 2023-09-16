@@ -7,6 +7,11 @@
         public int Idade { get; set; }
         public string CPF { get; set; }
 
-        List<int> Pokemons { get; set; }
+        public List<BoxPokemon> PokemonsCapturados { get; set; }
+
+        public MestrePokemon() {
+        
+            PokemonsCapturados = new List<BoxPokemon>();
+        }  
     }
 }
