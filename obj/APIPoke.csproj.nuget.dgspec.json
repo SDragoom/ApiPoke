@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Projetos\\FreelaPokemon\\ApiPoke\\APIPoke.csproj": {}
+    "C:\\Users\\vhmma\\OneDrive\\Documentos\\GitHub\\ApiPoke\\APIPoke.csproj": {}
   },
   "projects": {
-    "D:\\Projetos\\FreelaPokemon\\ApiPoke\\APIPoke.csproj": {
+    "C:\\Users\\vhmma\\OneDrive\\Documentos\\GitHub\\ApiPoke\\APIPoke.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Projetos\\FreelaPokemon\\ApiPoke\\APIPoke.csproj",
+        "projectUniqueName": "C:\\Users\\vhmma\\OneDrive\\Documentos\\GitHub\\ApiPoke\\APIPoke.csproj",
         "projectName": "APIPoke",
-        "projectPath": "D:\\Projetos\\FreelaPokemon\\ApiPoke\\APIPoke.csproj",
-        "packagesPath": "C:\\Users\\SDragoom\\.nuget\\packages\\",
-        "outputPath": "D:\\Projetos\\FreelaPokemon\\ApiPoke\\obj\\",
+        "projectPath": "C:\\Users\\vhmma\\OneDrive\\Documentos\\GitHub\\ApiPoke\\APIPoke.csproj",
+        "packagesPath": "C:\\Users\\vhmma\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\vhmma\\OneDrive\\Documentos\\GitHub\\ApiPoke\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\SDragoom\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\vhmma\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -40,6 +40,10 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
@@ -47,6 +51,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "System.Data.SQLite": {
+              "target": "Package",
+              "version": "[1.0.118, )"
             }
           },
           "imports": [
@@ -68,7 +76,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }
