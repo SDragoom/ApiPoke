@@ -12,7 +12,7 @@ using APIPoke.Services;
 namespace APIPoke.Controllers
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/pokemon/")]
     public class PokemonController : ControllerBase
     {
         private readonly HttpClient _httpClient;
