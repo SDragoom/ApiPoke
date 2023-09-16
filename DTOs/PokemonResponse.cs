@@ -4,6 +4,7 @@
     using System.Collections.Generic;
 
     using System.Globalization;
+    using APIPoke.Models;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
@@ -27,6 +28,8 @@
         public long Height { get; set; }
         [JsonProperty("weight")]
         public long Weight { get; set; }
+        [JsonProperty("chain")]
+        public List<PokemonEvolution> EvolutionChain { get; set; }
         //[JsonProperty("base_experience")]
         //public long BaseExperience { get; set; }
 
@@ -64,17 +67,17 @@
 
     }
 
-    public partial class Ability
-    {
-        [JsonProperty("ability")]
-        public Species? ability { get; set; }
+    //public partial class Ability
+    //{
+    //    [JsonProperty("ability")]
+    //    public Species? ability { get; set; }
 
-        [JsonProperty("is_hidden")]
-        public bool IsHidden { get; set; }
+    //    [JsonProperty("is_hidden")]
+    //    public bool IsHidden { get; set; }
 
-        [JsonProperty("slot")]
-        public long Slot { get; set; }
-    }
+    //    [JsonProperty("slot")]
+    //    public long Slot { get; set; }
+    //}
 
     public partial class Species
     {
@@ -160,41 +163,41 @@
         public GenerationViii? GenerationViii { get; set; }
     }
 
-    public partial class Sprites
-    {
-        //[JsonProperty("back_default")]
-        //public Uri? BackDefault { get; set; }
+    //public partial class Sprites
+    //{
+    //    //[JsonProperty("back_default")]
+    //    //public Uri? BackDefault { get; set; }
 
-        //[JsonProperty("back_female")]
-        //public Uri? BackFemale { get; set; }
+    //    //[JsonProperty("back_female")]
+    //    //public Uri? BackFemale { get; set; }
 
-        //[JsonProperty("back_shiny")]
-        //public Uri? BackShiny { get; set; }
+    //    //[JsonProperty("back_shiny")]
+    //    //public Uri? BackShiny { get; set; }
 
-        //[JsonProperty("back_shiny_female")]
-        //public Uri? BackShinyFemale { get; set; }
+    //    //[JsonProperty("back_shiny_female")]
+    //    //public Uri? BackShinyFemale { get; set; }
 
-        [JsonProperty("front_default")]
-        public Uri? FrontDefault { get; set; }
+    //    [JsonProperty("front_default")]
+    //    public Uri? FrontDefault { get; set; }
 
-        //[JsonProperty("front_female")]
-        //public Uri? FrontFemale { get; set; }
+    //    //[JsonProperty("front_female")]
+    //    //public Uri? FrontFemale { get; set; }
 
-        //[JsonProperty("front_shiny")]
-        //public Uri? FrontShiny { get; set; }
+    //    //[JsonProperty("front_shiny")]
+    //    //public Uri? FrontShiny { get; set; }
 
-        //[JsonProperty("front_shiny_female")]
-        //public Uri? FrontShinyFemale { get; set; }
+    //    //[JsonProperty("front_shiny_female")]
+    //    //public Uri? FrontShinyFemale { get; set; }
 
-        //[JsonProperty("other", NullValueHandling = NullValueHandling.Ignore)]
-        //public Other? Other { get; set; }
+    //    //[JsonProperty("other", NullValueHandling = NullValueHandling.Ignore)]
+    //    //public Other? Other { get; set; }
 
-        //[JsonProperty("versions", NullValueHandling = NullValueHandling.Ignore)]
-        //public Versions? Versions { get; set; }
+    //    //[JsonProperty("versions", NullValueHandling = NullValueHandling.Ignore)]
+    //    //public Versions? Versions { get; set; }
 
-        //[JsonProperty("animated", NullValueHandling = NullValueHandling.Ignore)]
-        //public Sprites? Animated { get; set; }
-    }
+    //    //[JsonProperty("animated", NullValueHandling = NullValueHandling.Ignore)]
+    //    //public Sprites? Animated { get; set; }
+    //}
 
     public partial class GenerationI
     {
@@ -355,24 +358,24 @@
         public OfficialArtwork? OfficialArtwork { get; set; }
     }
 
-    public partial class Stat
-    {
-        [JsonProperty("base_stat")]
-        public int BaseStat { get; set; }
+    //public partial class Stat
+    //{
+    //    [JsonProperty("base_stat")]
+    //    public int BaseStat { get; set; }
 
-        [JsonProperty("effort")]
-        public int Effort { get; set; }
+    //    [JsonProperty("effort")]
+    //    public int Effort { get; set; }
 
-        [JsonProperty("stat")]
-        public Species? StatStat { get; set; }
-    }
+    //    [JsonProperty("stat")]
+    //    public Species? StatStat { get; set; }
+    //}
 
-    public partial class TypeElement
-    {
-        [JsonProperty("slot")]
-        public long Slot { get; set; }
+    //public partial class TypeElement
+    //{
+    //    [JsonProperty("slot")]
+    //    public long Slot { get; set; }
 
-        [JsonProperty("type")]
-        public Species? Type { get; set; }
-    }
+    //    [JsonProperty("type")]
+    //    public Species? Type { get; set; }
+    //}
 }
