@@ -1,5 +1,6 @@
 using APIPoke.Data;
 using APIPoke.DTOs;
+using APIPoke.Functions;
 using APIPoke.Models;
 using APIPoke.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,25 +16,41 @@ namespace APIPoke.Controllers
     {
         private readonly HttpClient _httpClient;
 
+        public MestrePokemonController(IHttpClientFactory httpClientFactory)
+        {
+            // Injeção de dependência de HttpClient
+            _httpClient = httpClientFactory.CreateClient();
+
+        }
+
         [HttpPost("post")]
-        public async Task<IActionResult> CreateMestrePokemon([FromBody] MestrePokemonDto mestrePokemonDto )
+        public IActionResult CreateMestrePokemon([FromBody] MestrePokemonDto mestrePokemonDto)
         {
             try
             {
-                var mestrePokemon = new MestrePokemon
+                bool cpfIsvalid = CpfValidator.IsValid(mestrePokemonDto.CPF);
+                string cpf = CpfValidator.CpfClean(mestrePokemonDto.CPF);
+                if (cpfIsvalid)
                 {
-                    Nome = mestrePokemonDto.Nome,
-                    Idade = mestrePokemonDto.Idade,
-                    CPF = mestrePokemonDto.CPF,                    
-                };
 
-                using (var db = new MestrePokemonDbContext())
-                {
-                    db.MestresPokemon.Add(mestrePokemon);                    
-                    db.SaveChanges();
+                    var mestrePokemon = new MestrePokemon
+                    {
+                        Nome = mestrePokemonDto.Nome,
+                        Idade = mestrePokemonDto.Idade,
+                        CPF = cpf,
+                        PokemonsCapturados = null
+                    };
+
+                    using (var db = new MestrePokemonDbContext())
+                    {
+                        db.MestresPokemon.Add(mestrePokemon);
+                        db.SaveChanges();
+                    }
+
+                    return Ok("Mestre Pokémon cadastrado com sucesso.");
                 }
-
-                return Ok("Mestre Pokémon cadastrado com sucesso.");
+                else
+                    return BadRequest("CPF invalido");
             }
             catch (HttpRequestException ex)
             {
@@ -48,7 +65,7 @@ namespace APIPoke.Controllers
         }
 
         [HttpGet("get")]
-        public async Task<IActionResult> GetMestresPokemon(int idMestrePokemon)
+        public IActionResult GetMestresPokemon(int idMestrePokemon)
         {
             try
             {
@@ -80,7 +97,7 @@ namespace APIPoke.Controllers
         }
 
         [HttpGet("getall")]
-        public async Task<IActionResult> GetAllMestresPokemon()
+        public IActionResult GetAllMestresPokemon()
         {
             try
             {
@@ -105,10 +122,12 @@ namespace APIPoke.Controllers
         }
 
         [HttpPut("put")]
-        public async Task<IActionResult> UpdateMestrePokemon(int id, [FromBody] MestrePokemonDto mestrePokemonDto)
+        public IActionResult UpdateMestrePokemon(int id, [FromBody] MestrePokemonDto mestrePokemonDto)
         {
             try
             {
+                bool cpfIsvalid = CpfValidator.IsValid(mestrePokemonDto.CPF);
+                string cpf = CpfValidator.CpfClean(mestrePokemonDto.CPF);
                 using (var db = new MestrePokemonDbContext())
                 {
                     var existingMestrePokemon = db.MestresPokemon.Find(id);                   
@@ -116,7 +135,7 @@ namespace APIPoke.Controllers
                     // Atualizar as propriedades do Mestre Pokémon existente com os novos dados
                     existingMestrePokemon.Nome = mestrePokemonDto.Nome;
                     existingMestrePokemon.Idade = mestrePokemonDto.Idade;
-                    existingMestrePokemon.CPF = mestrePokemonDto.CPF;
+                    existingMestrePokemon.CPF = cpf;
 
                     db.SaveChanges();
                 }
@@ -136,7 +155,7 @@ namespace APIPoke.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<IActionResult> DeleteMestrePokemon(int id)
+        public IActionResult DeleteMestrePokemon(int id)
         {
             using (var db = new MestrePokemonDbContext())
             {
@@ -157,7 +176,7 @@ namespace APIPoke.Controllers
 
 
         [HttpPost("Capture")]
-        public async Task<IActionResult> CapturePokemon(int idMestrePokemon, int pokemonId)
+        public IActionResult CapturePokemon(int idMestrePokemon, int pokemonId)
         {
             try
             {
@@ -222,8 +241,10 @@ namespace APIPoke.Controllers
                 var CapturedPokemon = pokemonsCapturados.PokemonsCapturados;
                 
                 foreach (BoxPokemon pokemon in CapturedPokemon)
-                {                    
-                    var pokemons = await pokemonService.GetPokemonById(pokemon.PokemonId);
+                {
+
+                    int pokemonId = pokemon.PokemonId;
+                    var pokemons = await pokemonService.GetPokemonById(pokemonId);
                     pokemonConcatenatedResults.Add(pokemons);
                 }
 
